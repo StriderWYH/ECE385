@@ -1,0 +1,35 @@
+module address_lookup(input  is_tank,
+							input logic[1:0] tank_direction,
+							input [9:0] DrawX, DrawY, 
+							input [9:0] tankX, tankY,
+							output [18:0] address
+);
+always_comb
+begin
+	if(is_tank == 0)
+	begin
+		address = 640*DrawY + DrawX;
+	end
+	else
+	begin
+		address = 16*(DrawY-tankY) + DrawX-tankX;
+		if(tank_direction == 2'b00 )
+		begin
+			address = address + 19'b0;
+		end
+		else if(tank_direction == 2'b01)
+		begin
+			address = address + 19'b0000010011010000000;
+		end
+		else if(tank_direction == 2'b10)
+		begin
+			address = address + 19'b0000000001000000000;
+		end
+		else if(tank_direction == 2'b11)
+		begin
+			address = address + 19'b0000000001100000000;
+		end
+	end
+end
+
+endmodule

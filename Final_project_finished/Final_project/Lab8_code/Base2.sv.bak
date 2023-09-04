@@ -1,0 +1,123 @@
+
+module  Base2 ( input         Clk,                // 50 MHz clock
+                             Reset,              // Active-high reset signal
+                             frame_clk,          // The clock indicating a new frame (~60Hz)
+					input [31:0] keycode,
+               input [9:0]   DrawX, DrawY,       // Current pixel coordinates
+					input logic [9:0] tank1_upleft_X, tank1_upleft_Y,
+					input logic [9:0] cannonball_X_Pos,
+					input logic [9:0] cannonball_Y_Pos,
+               output logic  is_base2,             // Whether current pixel belongs to ball or background
+					output logic  ball1_hit_base2,
+					output logic [2:0] base2_HP, 
+					output logic base2_ruin
+				  );
+				  
+		parameter [9:0] Base2_X_MAX = 10'd559;  // base position for the enemy of tank1， which is fixed
+		parameter [9:0] Base2_X_MIN = 10'd544;  // left-up position on the Y axis		
+		parameter [9:0] Base2_Y_MAX = 10'd255;
+		parameter [9:0] Base2_Y_MIN = 10'd240;
+		parameter [2:0] Base2_HP_MAX = 10'd5;
+		
+		logic[2:0] Base2_HP, Base2_HP_in;
+		
+		assign base2_HP = Base2_HP;
+		
+		
+	 enum logic [2:0] {NEWBASE, BASEHURT, BASERUIN} State, Next_State;
+	 
+	 
+	 
+	 always_ff @ (posedge Clk) 
+	 begin
+		if (Reset)
+		begin
+			State <= NEWBASE;                // When newgame started, the base should be refreshed
+			Base2_HP <= Base2_HP_MAX;
+		end
+		else 
+		begin
+			State <= Next_State;
+			Base2_HP <= Base2_HP_in;
+		end
+	 end
+	 
+	 always_comb 
+	 begin
+		 Next_State = State;
+		 base2_ruin = 1'b0;
+		 Base2_HP_in = Base2_HP;
+		 ball1_hit_base2 = 1'b0;
+		 if(cannonball_X_Pos >= Base2_X_MIN && cannonball_X_Pos <= Base2_X_MAX 
+				&& cannonball_Y_Pos >= Base2_Y_MIN &&  cannonball_Y_Pos <= Base2_Y_MAX && && base2_ruin == 1'b0)
+		begin
+				Base2_HP_in = Base2_HP - 1'b1;
+				ball1_hit_base2 = 1'b1;
+		end
+		 unique case (State)
+//			NEWBASE:
+//			begin
+//					if(cannonball_X_Pos >= Base2_X_MIN && cannonball_X_Pos <= Base2_X_MAX 
+//						&& cannonball_Y_Pos >= Base2_Y_MIN &&  cannonball_Y_Pos <= Base2_Y_MAX && base2_ruin == 1'b0)
+//					begin
+//						Next_State = BASEHURT;
+//						Base2_HP_in = Base2_HP - 1'b1;
+//						ball1_hit_base2 = 1'b1;
+//					end
+//					else
+//					begin
+//						Next_State = NEWBASE;
+//					end
+//			end
+//			BASEHURT:
+//			begin
+//				if(Base2_HP == 3'b0)
+//					Next_State = BASERUIN;
+//				else
+//					Next_State = BASEHURT;
+//			end	
+			BASEHURT:
+			begin
+				if(Base2_HP == 3'b0)
+					Next_State = BASERUIN;
+				else
+					Next_State = BASEHURT;
+			end	
+				
+			BASERUIN:
+				Next_State = BASERUIN;
+			endcase
+			
+		 case (State)
+			BASEHURT: 
+			begin
+				if(cannonball_X_Pos >= Base2_X_MIN && cannonball_X_Pos <= Base2_X_MAX 
+						&& cannonball_Y_Pos >= Base2_Y_MIN &&  cannonball_Y_Pos <= Base2_Y_MAX)
+					begin
+					Base2_HP_in = Base2_HP - 1'b1;
+					ball1_hit_base2 = 1'b1;
+					end
+			end
+			BASERUIN:
+				base2_ruin = 1'b1;
+				
+				
+		 endcase
+	 end
+	 
+	
+	 
+	always_comb begin
+		  is_base2 = 1'b0;
+        if (  DrawX <= Base2_X_MAX  && DrawX >= Base2_X_MIN 
+		  && DrawY <= Base2_Y_MAX && DrawY >= Base2_Y_MIN && base2_ruin == 1'b0) 
+            is_base2 = 1'b1;
+    
+	 
+	 
+        /* The ball's (pixelated) circle is generated using the standard circle formula.  Note that while 
+           the single line is quite powerful descriptively, it causes the synthesis tool to use up three
+           of the 12 available multipliers on the chip! */
+    end	
+		
+endmodule

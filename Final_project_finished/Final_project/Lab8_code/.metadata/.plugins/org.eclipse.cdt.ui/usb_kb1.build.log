@@ -1,0 +1,13 @@
+14:08:37 **** Build of configuration Nios II for project usb_kb1 ****
+make all 
+Info: Building ../usb_kb1_bsp/
+D:/Quartus18.0/nios2eds/bin/gnu/H-x86_64-mingw32/bin/make --no-print-directory -C ../usb_kb1_bsp/
+[BSP build complete]
+Info: Compiling main.c to obj/default/main.o
+nios2-elf-gcc -xc -MP -MMD -c -I../usb_kb1_bsp//HAL/inc -I../usb_kb1_bsp/ -I../usb_kb1_bsp//drivers/inc  -pipe -D__hal__ -DALT_NO_INSTRUCTION_EMULATION -DALT_SINGLE_THREADED    -O0 -g -Wall   -mno-hw-div -mno-hw-mul -mno-hw-mulx -mgpopt=global  -o obj/default/main.o main.c
+main.c:24:17: fatal error: usb.h: No such file or directory
+compilation terminated.
+make: *** [obj/default/main.o] Error 1
+
+14:08:39 Build Finished (took 2s.181ms)
+

@@ -1,0 +1,9 @@
+20:07:15 **** Incremental Build of configuration Nios II for project usb_kb4 ****
+make all 
+Info: Building ../usb_kb4_bsp/
+D:/Quartus-lite-18.0/nios2eds/bin/gnu/H-x86_64-mingw32/bin/make --no-print-directory -C ../usb_kb4_bsp/
+[BSP build complete]
+[usb_kb4 build complete]
+
+20:07:16 Build Finished (took 643ms)
+
